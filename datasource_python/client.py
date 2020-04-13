@@ -10,12 +10,27 @@ URLS = {
 
 class Client():
     def __init__(self, api_name):
+        """ Base client for datasource_python, encapsulates all necessary logic
+
+        Parameters
+        ----------
+        api_name : string
+            Name of API, used to get the corresponding URL for the API
+        """
         self.url = self.get_url(api_name)
 
     def __getattribute__(self, name):
-        """ Create & return attribute as Query object if it doesn't already exist
+        """ Extends default attribute checker to create queries for non-existing attributes.
 
-        :param name: Name of table/field to query. `Client.xyz` will be transformed into `{ query { xyz {...} }`
+        Parameters
+        ----------
+        name
+            Attribute being requested
+        
+        Raises
+        ------
+        DSQueryError
+            Will throw an error if an attribute is accessed that doesn't exist and doesn't successfully fetch data.
         """
         try:
             return object.__getattribute__(self, name)
@@ -24,6 +39,18 @@ class Client():
             return object.__getattribute__(self, name)
 
     def get_url(self, api_name):
+        """ Object used for new/unknown attributes of Client
+
+        Parameters
+        ----------
+        api_name : string
+            Name of API, used to get the corresponding URL for the API
+
+        Raises
+        ------
+        DSTargetError
+            Gives verbose error message if api_name does not have corresponding URL
+        """
         if api_name in URLS:
             return URLS[api_name]
         else:
@@ -31,6 +58,15 @@ class Client():
 
 class Type():
     def __init__(self, name, url):
+        """ Object used for new/unknown attributes of Client
+
+        Parameters
+        ----------
+        name : string
+            Name of new attribute. Used as table/type in GraphQL query.
+        url : string
+            Url passed in from Client object
+        """
         self.name = name
         self.url = url
         self.args = []
@@ -38,11 +74,20 @@ class Type():
     def get(self, fields):
         """ Get entries for the specified type, limited by arguments if set
 
-        :param fields: Fields to include from the returned objects. `Client.xyz.get(['name'])` will be transformed into `{ query { xyz { name } } }`. Required field. 
-        :param type: list
-        :raises DSQueryError: This error is raised if any errors are returned by GraphQL.
-        :return: Response object returned by requests.post
-        :rtype: dict
+        Parameters
+        ----------
+        fields : list
+            Fields to include from the returned objects. `Client.xyz.get(['name'])` will be transformed into `{ query { xyz { name } } }`. Required field. 
+
+        Raises
+        ------
+        DSQueryError
+            This error is raised if any errors are returned by GraphQL.
+
+        Returns
+        -------
+        response : dict
+            Object returned by requests.post
         """
         if self.args:
             self.args = " ".join([
@@ -58,12 +103,17 @@ class Type():
         return response
 
     def set_arguments(self, arguments):
-        """ Prepare upcoming 'get' call to use these arguments
+        """ Prepare for upcoming 'get' call to use these arguments
 
-        :param arguments: Key-value pairs to use in refining a query.
-        :param type: dict
-        :return: Specifies whether arguments were provided, for use in debugging
-        :rtype: bool
+        Parameters
+        ----------
+        arguments : dict
+            Key-value pairs to use in refining a query.
+
+        Returns
+        -------
+        bool
+            Specifies whether arguments were provided, for use in debugging
         """
         self.args = arguments
         return True if self.args else False
