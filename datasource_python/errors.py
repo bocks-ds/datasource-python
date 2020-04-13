@@ -1,8 +1,15 @@
 class DSTargetError(Exception):
+    """ Incorrect API name passed into Client init
+    """
     pass
 
 class DSQueryError(Exception):
-    
+    """ Error(s) found in query to API.
+
+    This Error is used instead of passing back full response in order to limit stack trace exposure.
+
+    Contains attributes 'errors' and 'status_code' from response
+    """
     def __init__(self, response):
         self.errors = list(error['message'] for error in response.json()['errors'])
         self.status_code = response.status_code
