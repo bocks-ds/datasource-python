@@ -6,25 +6,31 @@ Python SDK for all DataSource iterations
 
 Install this package via pip:
 
-`pip install bocks_ds`
+```python
+pip install bocks_ds
+```
 
 
 ## Usage
 
 ### The Client
 
-First, import this package and instantiate a client object, providing the name of the datasource to access.
+Import this package and instantiate a client object.
 
-```
+```python
 import bocks_ds
 
-ds_client = bocks_ds.Client("starfinder")
+ds_client = bocks_ds.Client("starfinder") # provide the name of the datasource to access
 ```
 
-We will use this client for all of the following examples. It is recommended to instantiate the client in a central location that you may import into other application files as necessary.
+#### Error Example:
 
-Note that if you enter a string here that is not a valid target, a `DSTargetError` exception will be raised.
-
+```python
+try:
+    bad_client = Client("bad_client")
+except DSTargetError as e:
+    print(e) # The target 'bad_client' provided in Client initialization is not in available target names:\n['starfinder', 'pathfinder']
+```
 
 ### Fetching Data
 
@@ -32,15 +38,23 @@ There are currently only two options to consider when fetching data: the type an
 
 The "type" can be thought of as a data table, though we will discuss some complexities later on.
 
-In the example below, we will request the name and price for all rows in the "armor" type from the "starfinder" client that we instantiated above. In this example we'll also show you how you can add an optional status check after making the request.
 
-```
-response = ds_client.armor.get(['name', 'price'])
-if response.status_code == 200:
-    data = response.json()
+```python
+response = ds_client.armor.get(['name', 'price']) # 'armor' here is the query type
+if response.status_code == 200: # optional status check
+    data = response.json() # '.json()' gives the API data output we came for
 ```
 
-Note that the `ds_client` will accept any value as an attribute, which it will then use to craft an API request. If you request something that doesn't exist, the request will raise a `DSQueryError` exception.
+Note that the `ds_client` will accept **any value** as an attribute, which it will then use to craft an API request. 
+
+#### Error Example:
+
+```python
+try:
+    client.bad_name.get(['name']).json()
+except DSQueryError as e:
+    print(e) # <Response 400> DataSource did not find table/field 'bad_name'.
+```
 
 ### Refining Your Request
 
@@ -54,30 +68,40 @@ Finally, it is often valuable to select an item specifically by its `ID`, which 
 
 All arguments must be presented as a single dictionary, as seen in the examples below.
 
-```
+```python
 client.armor.set_arguments({"name_like":"basic"})
 response = ds_client.armor.get(['name', 'price'])
 ```
 
-```
+```python
 client.armor.set_arguments({"price_min":200, "price_max":2000})
 response = ds_client.armor.get(['name', 'price'])
 ```
 
-```
+```python
 client.armor.set_arguments({"id":1})
 response = ds_client.armor.get(['name', 'price'])
 ```
 
 Note that these requests do not stack, but you can place all terms into a single dictionary to futher refine results. If `set_arguments` is called multiple times, the final call will overwrite previous calls.
 
-```
+```python
 query = {"name_like":"basic", "price_min":200, "price_max":2000}
 client.armor.set_arguments(query)
 response = ds_client.armor.get(['name', 'price'])
 ```
 
 As a final note: all arguments are cleared when `get` is called.
+
+#### Error Example
+
+```python
+try:
+    client.armor.set_arguments({"name_min":200})
+    erroneous_armor = client.armor.get(['name', 'price']) # Throws exception due to errors in response.json()
+except DSQueryError as e:
+    print(e) # <Response 400> ['Unknown argument "name_min" on field "Query.armor". Did you mean "name_is", "name_like", "type_min", "bulk_min", or "level_min"?']
+```
 
 ### Fetching Nested Data
 
@@ -87,7 +111,7 @@ In order to access nested data, it is required that you present a dictionary des
 
 Where we previously provided a list of string field-names to query, we will now include a dictionary in that list, as seen in the examples below.
 
-```
+```python
 query = [
     "name",
     {
@@ -99,7 +123,7 @@ all_spells = ds_client.spells.get(query)
 
 This logic is recursive, so in the event that a relationship target has it's own relationships you may do the following:
 
-```
+```python
 query = [
     "name",
     {
