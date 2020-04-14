@@ -1,1 +1,4 @@
 **/__pycache__
+build/
+dist/
+bocks_ds.egg-info/
