@@ -1,9 +1,9 @@
 import pytest
-from datasource_python import Client, DSQueryError, DSTargetError
+from bocks_ds import Client, DSQueryError, DSTargetError
 
 client = Client("starfinder")
 
-class TestSuccesses:
+class TestBasic:
 
     def test_get(self):
         all_armor = client.armor.get(['name', 'price'])
@@ -30,9 +30,7 @@ class TestSuccesses:
         assert limited_list[0]['price'] >= 200
         assert limited_list[-1]['price'] <= 2000
 
-
-
-class TestExceptions:
+class TestBasicExceptions:
     def test_client_exception(self):
         with pytest.raises(DSTargetError) as error:
             Client("does_not_exist")

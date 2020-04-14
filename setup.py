@@ -1,10 +1,11 @@
 import setuptools
 
 
-long_description = ("This SDK simplifies programmatic usage of DataSource in Python applications.")
+with open("README.md", "r") as fh:
+    long_description = fh.read()
 
 setuptools.setup(
-    name="datasource_python",
+    name="bocks_ds",
     version="0.0.1",
     author="Bocks",
     description="DataSource Python SDK",
@@ -18,7 +19,7 @@ setuptools.setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         "Programming Language :: Python :: 3",
-        "License :: OSI Approved :: MIT License",
+        "License :: CCNC License",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
