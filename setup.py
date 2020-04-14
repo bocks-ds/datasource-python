@@ -19,7 +19,8 @@ setuptools.setup(
     classifiers=[
         'Development Status :: 3 - Alpha',
         "Programming Language :: Python :: 3",
-        "LICENSE :: FREE FOR NON-COMMERCIAL USE",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+        "License :: Free for non-commercial use",
         "Operating System :: OS Independent",
     ],
     python_requires='>=3.6',
