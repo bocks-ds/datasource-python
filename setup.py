@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="bocks_ds",
-    version="0.0.1",
+    version="0.2.1",
     author="Bocks",
     description="DataSource Python SDK",
     long_description_content_type="text/markdown",
