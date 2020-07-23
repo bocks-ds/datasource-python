@@ -44,3 +44,6 @@ class TestBasicExceptions:
             client.armor.get(['name', 'price'])
             assert error.status_code == 400
             assert error.errors >= 1
+
+    def test_naw_fam(self):
+        assert False
